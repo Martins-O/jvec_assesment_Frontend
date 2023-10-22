@@ -2,45 +2,40 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import axios from 'axios';
 
-
-const SignUp = () => {
+const SignUp = ({ navigation }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const handleSignUp = async () => {
-      if (!name || !email || !password) {
-        alert('Please fill in all fields');
-        return;
+    if (!name || !email || !password || !phoneNumber) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    const userData = {
+      username: name,
+      email: email,
+      password: password,
+      phoneNumber: phoneNumber,
+    };
+
+    try {
+      const response = await axios.post('http://localhost:3000/api/v1/customer/sign_up', userData);
+
+      if (response.status === 201) {
+        alert('Registration successful! You can now log in.');
+
+        await navigation.navigate('Login');
+      } else {
+
+        alert('Registration failed. Please try again.');
       }
-
-      // Prepare the data to send to the server
-      const userData = {
-        username: name,
-        email: email,
-        password: password,
-        phoneNumber: phoneNumber
-      };
-
-      try {
-        // Make an HTTP POST request to the backend for user registration
-        const response = await axios.post('localhost:3000/api/v1/customer/sign_up', userData);
-
-        if (response.status === 201) {
-          // Registration was successful
-          alert('Registration successful! You can now log in.');
-          // You can also navigate the user to the login screen here
-        } else {
-          // Registration failed, handle the error message from the server
-          alert('Registration failed. Please try again.');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred during registration. Please try again.');
-      }
-
-    console.log(`Name: ${name}, Email: ${email}, Password: ${password}`);
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred during registration. Please try again.');
+    }
   };
 
   return (
@@ -48,7 +43,7 @@ const SignUp = () => {
       <Text style={styles.title}>Sign Up</Text>
       <TextInput
         style={styles.input}
-        placeholder="Full Name"
+        placeholder="Name"
         onChangeText={setName}
         value={name}
       />
@@ -57,22 +52,24 @@ const SignUp = () => {
         placeholder="Email"
         onChangeText={setEmail}
         value={email}
-        keyboardType="email-address"
       />
       <TextInput
         style={styles.input}
         placeholder="Password"
         onChangeText={setPassword}
         value={password}
-        secureTextEntry
+        secureTextEntry={true}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Phone Number"
+        onChangeText={setPhoneNumber}
+        value={phoneNumber}
+        keyboardType="phone-pad"
       />
       <Button title="Sign Up" onPress={handleSignUp} />
-      <Text style={styles.loginText}>
-        Already have an account?{' '}
-        <Text style={styles.loginLink}>Log In</Text>
-      </Text>
     </View>
-  )
+  );
 };
 
 const styles = StyleSheet.create({
@@ -92,14 +89,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     paddingLeft: 8,
-  },
-  loginText: {
-    marginTop: 16,
-    textAlign: 'center',
-  },
-  loginLink: {
-    color: 'blue',
-    textDecorationLine: 'underline',
   },
 });
 

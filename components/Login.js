@@ -9,28 +9,26 @@ const SignIn = () => {
 
 
   const handleSignIn = async () => {
-    // Validate user input
     if (!email || !password) {
       alert('Please enter your email and password');
       return;
     }
 
-    // Prepare the data to send to the server
     const userData = {
       email: email,
       password: password,
     };
 
     try {
-      // Make an HTTP POST request to the backend for user authentication
+
       const response = await axios.post('localhost:3000/api/v1/customer/sign_in', userData);
 
       if (response.status === 200) {
         // Sign-in was successful
         alert('Sign-in successful! You are now logged in.');
-        // You can also navigate the user to the main app screen here
+
       } else {
-        // Sign-in failed, handle the error message from the server
+
         alert('Sign-in failed. Please check your email and password.');
       }
     } catch (error) {

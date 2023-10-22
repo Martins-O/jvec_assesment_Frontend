@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from 'axios';
+import ContactDetails from "./ContactDetails";
 
 const ContactsList = ({ navigation }) => {
   const [contacts, setContacts] = useState([]);
 
-  useEffect(() => {
-    // Fetch the list of contacts from your backend API
+  useEffect(async () => {
     async function fetchContacts() {
       try {
         const response = await axios.get('localhost:3000/api/v1/contact/find_all_contact');
         if (response.status === 200) {
-          setContacts(response.data); // Assuming the response contains an array of contact objects
+          setContacts(response.data);
         }
       } catch (error) {
         console.error('Error fetching contacts:', error);
       }
     }
 
-    fetchContacts();
+    await fetchContacts();
   }, []);
 
   return (
@@ -26,13 +26,12 @@ const ContactsList = ({ navigation }) => {
       <Text style={styles.title}>Contacts List</Text>
       <FlatList
         data={contacts}
-        keyExtractor={(item) => item.id.toString()} // Replace 'id' with your contact's unique identifier
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.contactItem}
-            onPress={() => {
-              // Navigate to the contact details screen, passing the contact data
-              navigation.navigate('ContactDetails', { contact: item });
+            onPress={async () => {
+              await navigation.navigate(ContactDetails, {contact: item});
             }}
           >
             <Text>{item.name}</Text>
